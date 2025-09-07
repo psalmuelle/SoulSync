@@ -22,7 +22,8 @@
         "monochromeImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#fafafa"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.erinlesamuel.SoulSync"
     },
     "web": {
       "bundler": "metro",
@@ -43,6 +44,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "346f3759-6dc9-4ac6-9978-45511f8433fb"
+      }
     }
   }
 }

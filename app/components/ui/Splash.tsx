@@ -11,8 +11,8 @@ export default function Splash({
       <LottieView
         source={require("@/assets/animations/splash.json")}
         autoPlay
-        loop={false}
-        resizeMode="cover"
+        loop={true}
+        resizeMode="contain"
         onAnimationFinish={onAnimationFinish}
       />
     </View>
