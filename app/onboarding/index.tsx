@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Color";
 import { Onboardings } from "@/constants/Onboarding";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Octicons from "@expo/vector-icons/Octicons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useMemo, useRef, useState } from "react";
@@ -101,9 +102,14 @@ export default function Onboarding() {
       </View>
 
       <Pressable onPress={handleNext} style={styles.nextButton}>
-        <Text style={styles.nextButtonText}>
-          {currentPage === Onboardings.length - 1 ? "Get Started" : "Next"}
-        </Text>
+        {currentPage === Onboardings.length - 1 ? (
+          <View style={styles.ctaContainer}>
+            <Text style={styles.nextButtonText}>Get Started</Text>
+            <Octicons name="arrow-right" size={24} color="white" />
+          </View>
+        ) : (
+          <Text style={styles.nextButtonText}>Next</Text>
+        )}
       </Pressable>
     </SafeAreaView>
   );
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
   skipText: {
     fontFamily: "DMSans",
     fontSize: 16,
-    color: Colors.light.grey9,
+    color: Colors.light.grey5,
   },
   page: {
     gap: 24,
@@ -158,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 24,
+    marginVertical: 40,
     gap: 8,
   },
   paginationDot: {
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   nextButton: {
-    backgroundColor: Colors.light.grey11,
+    backgroundColor: Colors.light.grey10,
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 50,
@@ -176,7 +182,13 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontFamily: "DMSans",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "white",
+  },
+  ctaContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
 });
