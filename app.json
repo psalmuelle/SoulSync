@@ -40,6 +40,73 @@
           "resizeMode": "contain",
           "backgroundColor": "#fbefe7"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            {
+              "fontFamily": "DMSans",
+              "fontDefinitions": [
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-Regular.ttf",
+                  "weight": 400,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-Medium.ttf",
+                  "weight": 500,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-Bold.ttf",
+                  "weight": 700,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-Italic.ttf",
+                  "weight": 400,
+                  "style": "italic"
+                },
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-MediumItalic.ttf",
+                  "weight": 500,
+                  "style": "italic"
+                },
+                {
+                  "path": "./assets/fonts/dm-sans/DMSans-BoldItalic.ttf",
+                  "weight": 700,
+                  "style": "italic"
+                }
+              ]
+            },
+            {
+              "fontFamily": "Recoleta",
+              "fontDefinitions": [
+                {
+                  "path": "./assets/fonts/recoleta/Recoleta Regular.otf",
+                  "weight": 400,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/recoleta/Recoleta Medium.otf",
+                  "weight": 500,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/recoleta/Recoleta SemiBold.otf",
+                  "weight": 600,
+                  "style": "normal"
+                },
+                {
+                  "path": "./assets/fonts/recoleta/Recoleta Bold.otf",
+                  "weight": 700,
+                  "style": "normal"
+                }
+              ]
+            }
+          ]
+        }
       ]
     ],
     "experiments": {

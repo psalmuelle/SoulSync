@@ -1,21 +1,33 @@
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
-
 export const Colors = {
   light: {
-    text: "#11181C",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
+    darkPurple: "#A65997",
+    lightPurple: "#F8E9F5",
+    lightOrange: "#FBEFE7",
+    white1: "#FFFFFF",
+    white2: "#FEFEFE",
+    white3: "#FDFDFD",
+    white4: "#F8F8F8",
+    white5: "#EEEEEE",
+    white6: "#EBEBEB",
+    grey1: "#D8D8D8",
+    grey2: "#BEBEBE",
+    grey3: "#9D9D9D",
+    grey4: "#7D7D7D",
+    grey5: "#5D5D5D",
+    grey6: "#3C3C3C",
+    grey7: "#323232",
+    grey8: "#282828",
+    grey9: "#1E1E1E",
+    grey10: "#141414",
+    grey11: "#0C0C0C",
   },
-  dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
+  gradient1: {
+    start: "#F97E34",
+    end: "#F850DF",
+  },
+  gradient2: {
+    start: "#FCCBC1",
+    middle: "#F5E4E9",
+    end: "#FBDDB7",
   },
 };
