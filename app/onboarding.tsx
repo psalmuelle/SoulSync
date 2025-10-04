@@ -1,5 +1,7 @@
+import Button from "@/components/ui/Button";
 import { Colors } from "@/constants/Color";
 import { Onboardings } from "@/constants/Onboarding";
+import { storage } from "@/lib/mmkvStorage";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import { Image } from "expo-image";
@@ -16,18 +18,20 @@ export default function Onboarding() {
   const [currentPage, setCurrentPage] = useState(0);
   const pagerRef = useRef<PagerView>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentPage < Onboardings.length - 1) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
       pagerRef.current?.setPage(nextPage);
     } else {
-      router.replace("/");
+      storage.set("hasOnboarded", true);
+      router.replace("/create-account");
     }
   };
 
-  const handleSkip = () => {
-    router.replace("/");
+  const handleSkip = async () => {
+    storage.set("hasOnboarded", true);
+    router.replace("/create-account");
   };
 
   const handleBack = () => {
@@ -101,7 +105,7 @@ export default function Onboarding() {
         ))}
       </View>
 
-      <Pressable onPress={handleNext} style={styles.nextButton}>
+      <Button onPress={handleNext}>
         {currentPage === Onboardings.length - 1 ? (
           <View style={styles.ctaContainer}>
             <Text style={styles.nextButtonText}>Get Started</Text>
@@ -110,7 +114,7 @@ export default function Onboarding() {
         ) : (
           <Text style={styles.nextButtonText}>Next</Text>
         )}
-      </Pressable>
+      </Button>
     </SafeAreaView>
   );
 }
@@ -170,14 +174,6 @@ const styles = StyleSheet.create({
   paginationDot: {
     height: 8,
     borderRadius: 4,
-  },
-  nextButton: {
-    backgroundColor: Colors.light.grey10,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 50,
-    alignItems: "center",
-    marginBottom: 16,
   },
   nextButtonText: {
     fontFamily: "DMSans",
