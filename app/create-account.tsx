@@ -1,50 +1,60 @@
+import Button from "@/components/ui/Button";
+import InputField from "@/components/ui/Input";
 import { Colors } from "@/constants/Color";
 import { storage } from "@/lib/mmkvStorage";
-import { Ionicons } from "@expo/vector-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
-  Pressable,
+  Dimensions,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const { width } = Dimensions.get("window");
 
 export default function Register() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const pagerRef = useRef<PagerView>(null);
 
-  const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+  // Create refs for input fields
+  const fullNameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords don't match");
-      return;
-    }
+  const { control, handleSubmit } = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+    },
+  });
 
-    if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters");
-      return;
-    }
-
+  const handleRegister = async (data: any) => {
     setIsLoading(true);
 
     // Simulate registration API call
     setTimeout(() => {
       // For demo purposes, accept any valid input
       storage.set("isAuthenticated", true);
-      storage.set("userEmail", email);
-      storage.set("userName", name);
+      storage.set("userEmail", data.email);
+      storage.set("userName", data.fullName);
       setIsLoading(false);
       router.replace("/(tabs)");
     }, 1000);
@@ -52,75 +62,155 @@ export default function Register() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.grey9} />
-        </Pressable>
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Join us on your wellness journey</Text>
-
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter your full name"
+      <ScrollView>
+        <View style={styles.header}>
+          <Text style={styles.title}>Create Your Safe Space</Text>
+          <Text style={styles.description}>
+            We're glad you're here. Let's get you set up gently.
+          </Text>
+        </View>
+        <PagerView
+          ref={pagerRef}
+          scrollEnabled={false}
+          style={styles.pagerView}
+          initialPage={0}
+        >
+          <View key={"1"}>
+            <Image
+              source={require("@/assets/images/register-illustration.png")}
+              style={styles.illustration}
+              contentFit="contain"
             />
+
+            <Button onPress={() => pagerRef.current?.setPage(1)}>
+              <Text style={styles.btnText}>Continue with Email</Text>
+            </Button>
           </View>
+          <View key={"2"}>
+            <View style={styles.form}>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    ref={fullNameRef}
+                    label="Full Name"
+                    placeholder="Enter your full name"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    textContentType="name"
+                    returnKeyType="next"
+                    onSubmitEditing={() => emailRef.current?.focus()}
+                  />
+                )}
+                name="fullName"
+              />
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    ref={emailRef}
+                    label="Email Address"
+                    placeholder="example@email.com"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    textContentType="emailAddress"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                  />
+                )}
+                name="email"
+              />
+
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    ref={passwordRef}
+                    label="Password"
+                    placeholder="minimum of 6 characters"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    textContentType="newPassword"
+                    secureTextEntry
+                    returnKeyType="done"
+                    onSubmitEditing={handleSubmit(handleRegister)}
+                  />
+                )}
+                name="password"
+              />
+
+              <Button onPress={handleSubmit(handleRegister)}>
+                <Text style={styles.btnText}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Text>
+              </Button>
+            </View>
           </View>
+        </PagerView>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Create a password"
-              secureTextEntry
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm your password"
-              secureTextEntry
-            />
-          </View>
-
-          <Pressable onPress={handleRegister} style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </Text>
-          </Pressable>
-
-          <View style={styles.loginContainer}>
-            <Text style={styles.loginText}>Already have an account? </Text>
-            <Link href="/sign-in" style={styles.loginLink}>
-              <Text style={styles.loginLinkText}>Sign In</Text>
+        <View style={styles.signupContainer}>
+          <Text style={styles.signupText}>
+            Already have an account?{" "}
+            <Link href="/sign-in" style={styles.signupSpan}>
+              Sign In
             </Link>
+          </Text>
+        </View>
+
+        <View style={styles.socialContainer}>
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <View style={styles.socialBtnContainer}>
+            <Button
+              variant="secondary"
+              style={styles.btnExtended}
+              onPress={() => {}}
+            >
+              <View style={styles.socialBtn}>
+                <Image
+                  source={require("@/assets/icons/google-icon.png")}
+                  style={styles.socialBtnImg}
+                />
+                <Text style={styles.socialBtnText}>Google</Text>
+              </View>
+            </Button>
+
+            <Button
+              variant="secondary"
+              style={styles.btnExtended}
+              onPress={() => {}}
+            >
+              <View style={styles.socialBtn}>
+                <Image
+                  source={require("@/assets/icons/apple-icon.png")}
+                  style={styles.socialBtnImg}
+                />
+                <Text style={styles.socialBtnText}>Apple</Text>
+              </View>
+            </Button>
           </View>
         </View>
-      </View>
+
+        <View style={styles.otherLinksContainer}>
+          <Link href={"/"}>
+            <Text style={styles.otherLinkText}>Privacy Policy</Text>
+          </Link>
+          <View style={styles.verticalDivider} />
+          <Link href={"/"}>
+            <Text style={styles.otherLinkText}>Terms of use</Text>
+          </Link>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -128,85 +218,116 @@ export default function Register() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.lightOrange,
+    padding: 16,
+    backgroundColor: "#FFF9F6",
+  },
+  pagerView: {
+    minHeight: 384,
+  },
+  illustration: {
+    width: 0.8 * width,
+    height: 320,
+    marginHorizontal: "auto",
+    marginTop: 4,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-  },
-  backButton: {
-    padding: 8,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 16,
   },
   title: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.light.grey11,
     fontFamily: "Recoleta",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.light.grey7,
-    fontFamily: "DMSans",
-    marginBottom: 40,
-  },
-  form: {
-    gap: 20,
-  },
-  inputContainer: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 16,
+    fontSize: 32,
     fontWeight: "500",
     color: Colors.light.grey11,
-    fontFamily: "DMSans",
+    marginBottom: 4,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.light.grey4,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  description: {
     fontSize: 16,
+    color: Colors.light.grey5,
     fontFamily: "DMSans",
-    backgroundColor: "white",
   },
-  registerButton: {
-    backgroundColor: Colors.light.grey11,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 20,
+  form: {
+    marginTop: 40,
+    gap: 20,
   },
-  registerButtonText: {
+  btnText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
     fontFamily: "DMSans",
   },
-  loginContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
+  signupContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   },
-  loginText: {
+  signupText: {
+    textAlign: "center",
+    fontFamily: "DMSans",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  signupSpan: {
+    color: Colors.light.darkPurple,
+    fontFamily: "DMSans",
+    fontWeight: "600",
+  },
+  socialContainer: {
+    marginTop: 24,
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.light.grey3,
+  },
+  dividerText: {
+    marginHorizontal: 16,
     fontSize: 14,
-    color: Colors.light.grey7,
+    color: Colors.light.grey6,
     fontFamily: "DMSans",
   },
-  loginLink: {
-    marginLeft: 4,
+  socialBtnContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 16,
   },
-  loginLinkText: {
+  btnExtended: {
+    width: (width - 48) / 2,
+  },
+  socialBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+  },
+  socialBtnImg: {
+    width: 24,
+    height: 24,
+  },
+  socialBtnText: {
+    color: Colors.light.grey9,
+    fontSize: 18,
+    fontFamily: "DMSans",
+    fontWeight: "500",
+  },
+  verticalDivider: {
+    width: 1,
+    height: 14,
+    backgroundColor: Colors.light.grey3,
+  },
+  otherLinksContainer: {
+    marginTop: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  otherLinkText: {
+    color: Colors.light.grey6,
     fontSize: 14,
-    color: Colors.light.grey11,
-    fontWeight: "600",
     fontFamily: "DMSans",
   },
 });
