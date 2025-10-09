@@ -37,7 +37,11 @@ export default function Register() {
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
@@ -98,6 +102,7 @@ export default function Register() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
+                    showBorderError={Boolean(errors.fullName)}
                     textContentType="name"
                     returnKeyType="next"
                     onSubmitEditing={() => emailRef.current?.focus()}
@@ -116,6 +121,7 @@ export default function Register() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
+                    showBorderError={Boolean(errors.email)}
                     textContentType="emailAddress"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -136,6 +142,7 @@ export default function Register() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
+                    showBorderError={Boolean(errors.password)}
                     textContentType="newPassword"
                     secureTextEntry
                     returnKeyType="done"

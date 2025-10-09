@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
+    borderRadius: 100,
   },
   skipButton: {
     padding: 8,

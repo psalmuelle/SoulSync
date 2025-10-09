@@ -39,6 +39,7 @@ export default function RootLayout() {
           <Stack.Screen name="create-account" />
           <Stack.Screen name="forgot-password" />
           <Stack.Screen name="onboarding" />
+          <Stack.Screen name="code-verification" />
         </Stack.Protected>
       </Stack>
     </View>

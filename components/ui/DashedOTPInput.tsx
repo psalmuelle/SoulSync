@@ -1,0 +1,124 @@
+import type { OTPInputRef } from "input-otp-native";
+import { OTPInput, type SlotProps } from "input-otp-native";
+import { useRef } from "react";
+import { Alert, StyleSheet, Text, View, type ViewStyle } from "react-native";
+
+import { Colors } from "@/constants/Color";
+import { useEffect } from "react";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
+
+export default function DashedOTPInput() {
+  const ref = useRef<OTPInputRef>(null);
+  const onComplete = (code: string) => {
+    Alert.alert("Completed with code:", code);
+    ref.current?.clear();
+  };
+
+  return (
+    <View>
+      <OTPInput
+        ref={ref}
+        onComplete={onComplete}
+        containerStyle={styles.container}
+        maxLength={5}
+        render={({ slots }) => (
+          <View style={styles.slotsContainer}>
+            {slots.map((slot, idx) => (
+              <Slot key={idx} {...slot} />
+            ))}
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+function Slot({ char, isActive, hasFakeCaret }: SlotProps) {
+  return (
+    <View style={styles.slot}>
+      {char !== null && <Text style={styles.char}>{char}</Text>}
+      {hasFakeCaret && <FakeCaret />}
+      <View style={[styles.underline, isActive && styles.activeUnderline]} />
+    </View>
+  );
+}
+
+function FakeCaret({ style }: { style?: ViewStyle }) {
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0, { duration: 500 }),
+        withTiming(1, { duration: 500 })
+      ),
+      -1,
+      true
+    );
+  }, [opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <View style={styles.fakeCaretContainer}>
+      <Animated.View style={[styles.fakeCaret, style, animatedStyle]} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  slotsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  slot: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  char: {
+    fontSize: 32,
+    fontWeight: "500",
+    color: Colors.light.grey11,
+  },
+  underline: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 1,
+    backgroundColor: Colors.light.grey3,
+  },
+  activeUnderline: {
+    backgroundColor: Colors.light.grey11,
+    height: 2,
+  },
+  fakeCaretContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  fakeCaret: {
+    width: 2,
+    height: 24,
+    backgroundColor: Colors.light.grey11,
+    borderRadius: 1,
+  },
+});

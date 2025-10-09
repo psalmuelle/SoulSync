@@ -14,12 +14,14 @@ interface InputProps extends TextInputProps {
   label?: string;
   errorMsg?: string;
   ref?: React.Ref<TextInput>;
+  showBorderError?: boolean;
 }
 
 export default function InputField({
   label,
   errorMsg,
   ref,
+  showBorderError,
   ...rest
 }: InputProps) {
   const isPasswordField =
@@ -34,7 +36,11 @@ export default function InputField({
         <TextInput
           {...rest}
           ref={ref}
-          style={[styles.input, isPasswordField && styles.inputWithPadding]}
+          style={[
+            styles.input,
+            isPasswordField && styles.inputWithPadding,
+            showBorderError && { borderColor: "#E04A7D" },
+          ]}
           placeholderTextColor={Colors.light.grey2}
           secureTextEntry={
             isPasswordField ? !showPassword : rest.secureTextEntry

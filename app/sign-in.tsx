@@ -9,6 +9,7 @@ import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Dimensions,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -110,9 +111,9 @@ export default function Login() {
           />
 
           <Link href={"/forgot-password"} asChild>
-            <View style={styles.fpContainer}>
+            <Pressable style={styles.fpContainer}>
               <Text style={styles.fpText}>Forgot Password?</Text>
-            </View>
+            </Pressable>
           </Link>
 
           <Button onPress={handleSubmit(handleLogin)}>

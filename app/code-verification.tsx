@@ -1,44 +1,21 @@
 import Button from "@/components/ui/Button";
-import InputField from "@/components/ui/Input";
+import DashedOTPInput from "@/components/ui/DashedOTPInput";
 import { Colors } from "@/constants/Color";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import z from "zod";
 
-const emailSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-export default function ForgotPassword() {
+export default function CodeVerification() {
   const router = useRouter();
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(emailSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
+  const params = useLocalSearchParams<{
+    user_process: string;
+    email: string;
+  }>();
 
   const handleBack = () => {
     router.back();
   };
-
-  const onSubmit = (data: { email: string }) => {
-    //Navigate to code verification screen with a param to indicate it's for password reset
-    router.push({
-      pathname: "/code-verification",
-      params: { user_process: "reset_password", email: data.email },
-    });
-  };
-
   return (
     <SafeAreaView style={styles.pageContainer}>
       <View style={styles.topBar}>
@@ -47,32 +24,25 @@ export default function ForgotPassword() {
         </Pressable>
       </View>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Forgot Password</Text>
+        <Text style={styles.headerText}>
+          {params.user_process === "reset_password"
+            ? "Code Verification"
+            : "We're making sure it's really you."}
+        </Text>
         <Text style={styles.headerSubText}>
-          No worries. It happens to the best of us. Enter your email address to
-          continue.
+          {params.user_process === "reset_password"
+            ? `Enter 6 digit code sent to ${params.email}`
+            : `A 6 digit code was sent to ${params.email}. Enter the code to continue.`}
         </Text>
       </View>
       <View style={styles.form}>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputField
-              label="Email Address"
-              placeholder="example@email.com"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              textContentType="emailAddress"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              errorMsg={errors.email?.message}
-            />
-          )}
-          name="email"
-        />
+        <DashedOTPInput />
+
+        <View>
+          <Text>Didn't get the code? Resend Code.</Text>
+        </View>
       </View>
-      <Button onPress={handleSubmit(onSubmit)}>
+      <Button onPress={() => {}}>
         <Text style={styles.btnText}>Send Reset Link</Text>
       </Button>
     </SafeAreaView>
@@ -112,7 +82,7 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
-    marginTop: 4,
+    marginTop: 40,
   },
   btnText: {
     color: "white",
